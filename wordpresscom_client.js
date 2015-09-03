@@ -1,18 +1,18 @@
-Github = {};
+Wordpresscom = {};
 
-// Request Github credentials for the user
+// Request WordPress.com credentials for the user
 // @param options {optional}
 // @param credentialRequestCompleteCallback {Function} Callback function to call on
 //   completion. Takes one argument, credentialToken on success, or Error on
 //   error.
-Github.requestCredential = function (options, credentialRequestCompleteCallback) {
+Wordpresscom.requestCredential = function (options, credentialRequestCompleteCallback) {
   // support both (options, callback) and (callback).
   if (!credentialRequestCompleteCallback && typeof options === 'function') {
     credentialRequestCompleteCallback = options;
     options = {};
   }
 
-  var config = ServiceConfiguration.configurations.findOne({service: 'github'});
+  var config = ServiceConfiguration.configurations.findOne({service: 'wordpresscom'});
   if (!config) {
     credentialRequestCompleteCallback && credentialRequestCompleteCallback(
       new ServiceConfiguration.ConfigError());
@@ -23,17 +23,18 @@ Github.requestCredential = function (options, credentialRequestCompleteCallback)
   var scope = (options && options.requestPermissions) || ['user:email'];
   var flatScope = _.map(scope, encodeURIComponent).join('+');
 
-  var loginStyle = OAuth._loginStyle('github', config, options);
+  var loginStyle = OAuth._loginStyle('wordpresscom', config, options);
 
   var loginUrl =
-    'https://github.com/login/oauth/authorize' +
+    'https://public-api.wordpress.com/oauth2/authorize' +
     '?client_id=' + config.clientId +
-    '&scope=' + flatScope +
-    '&redirect_uri=' + OAuth._redirectUri('github', config) +
+    '&redirect_uri=' + OAuth._redirectUri('wordpresscom', config) +
+    '&response_type=code' +
+    '&scope=auth' +
     '&state=' + OAuth._stateParam(loginStyle, credentialToken, options.redirectUrl);
 
   OAuth.launchLogin({
-    loginService: "github",
+    loginService: "wordpresscom",
     loginStyle: loginStyle,
     loginUrl: loginUrl,
     credentialRequestCompleteCallback: credentialRequestCompleteCallback,
